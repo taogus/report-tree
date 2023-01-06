@@ -129,6 +129,10 @@ public class SelectInputComponent extends InputComponent {
         this.useTree = useTree;
     }
 
+    public String getTreeJson() {
+        return treeJson;
+    }
+
     public void setTreeJson(String treeJson) {
         this.treeJson = treeJson;
     }

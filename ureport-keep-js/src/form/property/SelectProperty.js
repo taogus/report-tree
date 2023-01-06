@@ -31,8 +31,8 @@ export default class SelectProperty extends Property{
         // 树状结构
         this.treeInput = $(`<div class="form-group"></div>`);
         this.treeInput.append($("<label>树状结构JSON数据</label>"));
-        const treeValueTextarea = $(`<textarea class="form-control" rows="7"></textarea>`);
-        this.treeInput.append(treeValueTextarea);
+        this.treeValueTextarea = $(`<textarea class="form-control" rows="7"></textarea>`);
+        this.treeInput.append(this.treeValueTextarea);
         this.optionFormGroup.append(this.treeInput);
 
         const _this=this;
@@ -50,14 +50,26 @@ export default class SelectProperty extends Property{
                 _this.simpleOptionGroup.show();
                 _this.treeInput.hide();
             } else {
+                console.log(editor);
                 editor.useDataset=false;
                 editor.useTree = true;
-                editor.treeValue = treeValueTextarea;
+                //editor.treeValue = this.treeValueTextarea.val();
                 _this.datasetGroup.hide();
                 _this.simpleOptionGroup.hide();
                 _this.treeInput.show();
             }
         });
+        let textareaVal = this.treeValueTextarea
+        textareaVal.blur(function() {
+            editor.treeValue = textareaVal.val();
+        })
+
+        if(editor.treeValue) {
+            this.treeValueTextarea.val(editor.treeValue);
+        } else {
+            editor.treeValue = this.treeValueTextarea.val();
+        }
+
         const datasetGroup=$(`<div class="form-group"><label>数据集</label></div>`);
         this.datasetGroup.append(datasetGroup);
         const datasetSelect=$(`<select class="form-control"></select>`);

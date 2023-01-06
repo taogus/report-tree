@@ -13,7 +13,7 @@ function initTreeView(treeElId, treeData, valElId, iconElId) {
         data: JSON.parse(treeData),
         //showCheckbox: 1,//复选框设置，也可以是true
         showIcon: false,
-        onhoverColor: 'rgba(67,143,207,0.3)',
+        //onhoverColor: 'rgba(67,143,207,0.3)',
         selectedColor: '#000000',
         selectedBackColor: '#EEEEEE',
         collapseIcon:"",

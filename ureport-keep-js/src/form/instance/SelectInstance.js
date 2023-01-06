@@ -57,6 +57,9 @@ export default class SelectInstance extends Instance{
         this.dataset=json.dataset;
         this.labelField=json.labelField;
         this.valueField=json.valueField;
+        this.useTree=json.useTree;
+        this.treeValue = json.treeJson;
+        console.log(json);
     }
     toJson(){
         const json={
@@ -69,6 +72,8 @@ export default class SelectInstance extends Instance{
             dataset:this.dataset,
             labelField:this.labelField,
             valueField:this.valueField,
+            useTree: this.useTree,
+            treeValue: this.treeValue,
             options:[]
         };
         for(let option of this.options){
@@ -85,7 +90,7 @@ export default class SelectInstance extends Instance{
         }
         xml+='>';
         if (this.useTree) {
-            xml += `<tree-value>${this.treeValue.val()}</tree-value>`
+            xml += `<tree-value>${this.treeValue}</tree-value>`
         }  else {
             for(let option of this.options || []){
                 xml+=`<option label="${option.label}" value="${option.value}"></option>`;
