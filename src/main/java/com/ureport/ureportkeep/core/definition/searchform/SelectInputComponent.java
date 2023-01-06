@@ -42,10 +42,10 @@ public class SelectInputComponent extends InputComponent {
         Object pvalue = context.getParameter(name) == null ? "" : context.getParameter(name);
         StringBuilder sb = new StringBuilder();
         if (useTree) {
-            sb.append("<div id='" + context.buildComponentId(this) + "_tree'></div>");
-        } else {
-            sb.append("<select style=\"padding:3px;height:28px\" id='" + context.buildComponentId(this) + "' name='" + name + "' class='form-control'>");
+            return builderTreeViewHtml(context.buildComponentId(this));
         }
+
+        sb.append("<select style=\"padding:3px;height:28px\" id='" + context.buildComponentId(this) + "' name='" + name + "' class='form-control'>");
         if (useDataset && StringUtils.isNotBlank(dataset)) {
             Dataset ds = context.getDataset(dataset);
             if (ds == null) {
@@ -60,7 +60,7 @@ public class SelectInputComponent extends InputComponent {
             if (pvalue.equals("")) {
                 sb.append("<option value='' selected></option>");
             }
-        } else if(!useTree) {
+        } else if (!useTree) {
             for (Option option : options) {
                 String value = option.getValue();
                 String selected = value.equals(pvalue) ? "selected" : "";
@@ -71,18 +71,17 @@ public class SelectInputComponent extends InputComponent {
             }
 
         }
-        if (!useTree) {
-            sb.append("</select>");
-        }
+        sb.append("</select>");
         return sb.toString();
     }
 
     @Override
     public String initJs(RenderContext context) {
+        String id = context.buildComponentId(this);
         String name = getBindParameter();
         StringBuilder sb = new StringBuilder();
         if (useTree) {
-
+            sb.append(builderTreeViewJs(id));
         }
 
         sb.append("formElements.push(");
@@ -93,11 +92,33 @@ public class SelectInputComponent extends InputComponent {
         sb.append("}");
         sb.append("return {");
         sb.append("\"" + name + "\":");
-        sb.append("$('#" + context.buildComponentId(this) + "').val()");
+        sb.append("$('#" + (useTree ? "input-" + id : id) + "').val()");
         sb.append("}");
         sb.append("}");
         sb.append(");");
         return sb.toString();
+    }
+
+    private String builderTreeViewJs(String id) {
+        StringBuffer js = new StringBuffer();
+        js.append("initTreeView('#tree-" + id + "', '" + treeJson + "', '#input-" + id + "', 'icon-" + id + "');");
+        js.append("$('#input-group-" + id + "').click(function(event){");
+        js.append("treeViewclick('#tree-" + id + "', 'icon-" + id + "', event);");
+        js.append("});");
+        js.append("$(document).click(function () {$(\"#tree-" + id + "\").hide();});");
+
+        return js.toString();
+    }
+
+    private String builderTreeViewHtml(String id) {
+        StringBuffer html = new StringBuffer();
+        html.append("<div class=\"input-group\" id=\"input-group-" + id + "\">");
+        html.append("<input type=\"text\" class=\"form-control\" id=\"input-" + id + "\" readonly aria-describedby=\"size1-" + id + "\">");
+        html.append("<span class=\"input-group-addon\" id=\"size1-" + id + "\"><i class=\"glyphicon glyphicon-chevron-up\" id=\"icon-" + id + "\"></i></span>");
+        html.append("</div>");
+        html.append("<div hidden class=\"treeStyle\" id=\"tree-" + id + "\"></div>");
+
+        return html.toString();
     }
 
     public boolean isUseTree() {
@@ -106,10 +127,6 @@ public class SelectInputComponent extends InputComponent {
 
     public void setUseTree(boolean useTree) {
         this.useTree = useTree;
-    }
-
-    public String getTreeJson() {
-        return treeJson;
     }
 
     public void setTreeJson(String treeJson) {
