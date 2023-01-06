@@ -18,6 +18,7 @@ package com.ureport.ureportkeep.core.parser.impl.searchform;
 import com.ureport.ureportkeep.core.definition.searchform.LabelPosition;
 import com.ureport.ureportkeep.core.definition.searchform.Option;
 import com.ureport.ureportkeep.core.definition.searchform.SelectInputComponent;
+import com.ureport.ureportkeep.core.exception.ReportParseException;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
 import org.springframework.stereotype.Component;
@@ -45,6 +46,24 @@ public class SelectInputParser implements FormParser<SelectInputComponent> {
 			select.setLabelField(element.attributeValue("label-field"));
 			select.setValueField(element.attributeValue("value-field"));
 		}
+		String useTree = element.attributeValue("use-tree");
+		if (StringUtils.isNotBlank(useTree)) {
+			Object treeObj = element.elements().get(0);
+			if(treeObj==null || !(treeObj instanceof Element)){
+				return select;
+			}
+			Element treeElement = (Element) treeObj;
+			if (!treeElement.getName().equals("tree-value")) {
+				return select;
+			}
+
+			select.setUseTree(Boolean.valueOf(useTree));
+			select.setTreeJson(treeElement.getText());
+
+			if (!getJSONType(select.getTreeJson())) {
+				throw new ReportParseException("下拉选择框的树结构数据不为json格式");
+			}
+		}
 		List<Option> options=new ArrayList<Option>();
 		for(Object obj:element.elements()){
 			if(obj==null || !(obj instanceof Element)){
@@ -61,6 +80,18 @@ public class SelectInputParser implements FormParser<SelectInputComponent> {
 		}
 		select.setOptions(options);
 		return select;
+	}
+
+
+	private boolean getJSONType(String str) {
+		boolean result = false;
+		if (StringUtils.isNotBlank(str)) {
+			str = str.trim();
+			if (str.startsWith("[") && str.endsWith("]")) {
+				result = true;
+			}
+		}
+		return result;
 	}
 
 	@Override

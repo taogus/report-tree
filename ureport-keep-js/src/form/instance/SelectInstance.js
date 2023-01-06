@@ -80,10 +80,16 @@ export default class SelectInstance extends Instance{
         let xml=`<input-select label="${this.label}" type="${SelectInstance.TYPE}" label-position="${this.labelPosition || 'top'}" bind-parameter="${this.bindParameter || ''}"`;
         if(this.useDataset){
             xml+=` use-dataset="${this.useDataset}" dataset="${this.dataset}" label-field="${this.labelField}" value-field="${this.valueField}"`;
+        } else if (this.useTree)  {
+            xml += ` use-tree="${this.useTree}" `
         }
         xml+='>';
-        for(let option of this.options || []){
-            xml+=`<option label="${option.label}" value="${option.value}"></option>`;
+        if (this.useTree) {
+            xml += `<tree-value>${this.treeValue.val()}</tree-value>`
+        }  else {
+            for(let option of this.options || []){
+                xml+=`<option label="${option.label}" value="${option.value}"></option>`;
+            }
         }
         xml+=`</input-select>`;
         return xml;

@@ -16,9 +16,11 @@ export default class SelectProperty extends Property{
         super.refreshValue(editor);
         this.optionFormGroup.empty();
         const group=$(`<div class="form-group"><label>数据来源</label></div>`);
-        const datasourceSelect=$(`<select class="form-control">
+        const datasourceSelect=$(`
+        <select class="form-control">
             <option value="dataset">数据集</option>
             <option value="simple">固定值</option>
+            <option value="tree">树结构</option>
         </select>`);
         group.append(datasourceSelect);
         this.optionFormGroup.append(group);
@@ -26,16 +28,34 @@ export default class SelectProperty extends Property{
         this.optionFormGroup.append(this.simpleOptionGroup);
         this.datasetGroup=$(`<div class="form-group"></div>`);
         this.optionFormGroup.append(this.datasetGroup);
+        // 树状结构
+        this.treeInput = $(`<div class="form-group"></div>`);
+        this.treeInput.append($("<label>树状结构JSON数据</label>"));
+        const treeValueTextarea = $(`<textarea class="form-control" rows="7"></textarea>`);
+        this.treeInput.append(treeValueTextarea);
+        this.optionFormGroup.append(this.treeInput);
+
         const _this=this;
         datasourceSelect.change(function(){
             if($(this).val()==='dataset'){
                 editor.useDataset=true;
+                editor.useTree = false;
                 _this.datasetGroup.show();
                 _this.simpleOptionGroup.hide();
-            }else{
+                _this.treeInput.hide();
+            }else if($(this).val()==='simple') {
                 editor.useDataset=false;
+                editor.useTree = false;
                 _this.datasetGroup.hide();
                 _this.simpleOptionGroup.show();
+                _this.treeInput.hide();
+            } else {
+                editor.useDataset=false;
+                editor.useTree = true;
+                editor.treeValue = treeValueTextarea;
+                _this.datasetGroup.hide();
+                _this.simpleOptionGroup.hide();
+                _this.treeInput.show();
             }
         });
         const datasetGroup=$(`<div class="form-group"><label>数据集</label></div>`);
@@ -107,12 +127,18 @@ export default class SelectProperty extends Property{
         }
         valueSelect.val(targetField);
         valueGroup.append(valueSelect);
-        if(editor.useDataset){
+        if(editor.useDataset) {
             datasourceSelect.val('dataset');
             this.datasetGroup.show();
             this.simpleOptionGroup.hide();
+        } else if(editor.useTree) {
+            datasourceSelect.val('tree');
+            this.datasetGroup.hide();
+            this.simpleOptionGroup.hide();
+            this.treeInput.show();
         }else{
             this.datasetGroup.hide();
+            this.treeInput.hide();
             this.simpleOptionGroup.show();
             datasourceSelect.val('simple');
         }
