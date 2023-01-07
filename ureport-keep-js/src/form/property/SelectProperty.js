@@ -30,8 +30,8 @@ export default class SelectProperty extends Property{
         this.optionFormGroup.append(this.datasetGroup);
         // 树状结构
         this.treeInput = $(`<div class="form-group"></div>`);
-        this.treeInput.append($("<label>树状结构JSON数据</label>"));
-        this.treeValueTextarea = $(`<textarea class="form-control" rows="7"></textarea>`);
+        this.treeInput.append($("<label>数据来源URL</label>"));
+        this.treeValueTextarea = $(`<textarea class="form-control" rows="2"></textarea>`);
         this.treeInput.append(this.treeValueTextarea);
         this.optionFormGroup.append(this.treeInput);
 
@@ -64,6 +64,7 @@ export default class SelectProperty extends Property{
             editor.treeValue = textareaVal.val();
         })
 
+        console.log(editor);
         if(editor.treeValue) {
             this.treeValueTextarea.val(editor.treeValue);
         } else {

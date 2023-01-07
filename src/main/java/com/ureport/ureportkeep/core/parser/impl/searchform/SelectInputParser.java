@@ -59,10 +59,6 @@ public class SelectInputParser implements FormParser<SelectInputComponent> {
 
 			select.setUseTree(Boolean.valueOf(useTree));
 			select.setTreeJson(treeElement.getText());
-
-			if (!getJSONType(select.getTreeJson())) {
-				throw new ReportParseException("下拉选择框的树结构数据不为json格式");
-			}
 		}
 		List<Option> options=new ArrayList<Option>();
 		for(Object obj:element.elements()){

@@ -6,11 +6,26 @@
  * @param valElId
  * @param iconElId
  */
-function initTreeView(treeElId, treeData, valElId, iconElId) {
+function initTreeView(treeElId, URL, valElId, iconElId) {
+    let treeData = [];
+    // 请求数据
+    $.ajax({
+        type : "get",//默认为get请求
+        url : URL, //请求的地址
+        dataType : "json", // 请求文本类型数据
+        async:false,
+        success : function(data){
+            treeData = data;
+        },
+        error :function(err){
+            console.log(err)//返回为错误对象，其中会包含错误信息
+        }
+    })
+
     let $optionTree = $(treeElId);
     $optionTree.treeview({
         levels: 3,//默认显示情况下  树显示到2级深度 默认是2
-        data: JSON.parse(treeData),
+        data: treeData,
         //showCheckbox: 1,//复选框设置，也可以是true
         showIcon: false,
         //onhoverColor: 'rgba(67,143,207,0.3)',
